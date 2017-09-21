@@ -124,7 +124,9 @@
     <Compile Include="MessageRouting\IMessageRouterResultHandler.cs" />
     <Compile Include="MessageRouting\MessageRouterManager.cs" />
     <Compile Include="MessageRouting\MessageRouterResult.cs" />
+    <Compile Include="Models\ILogger.cs" />
     <Compile Include="Models\PartyWithTimestamps.cs" />
+    <Compile Include="Utils\ConsoleLogger.cs" />
     <Compile Include="Utils\ExceptionHandler.cs" />
     <Compile Include="Utils\MessagingUtils.cs" />
     <Compile Include="Models\Party.cs" />
