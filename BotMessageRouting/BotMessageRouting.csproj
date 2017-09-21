@@ -116,6 +116,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageRouting\DataStore\Azure\AzureStorageBase.cs" />
     <Compile Include="MessageRouting\DataStore\Azure\AzureTableStorageRoutingDataManager.cs" />
     <Compile Include="MessageRouting\DataStore\Azure\PartyTableEntity.cs" />
     <Compile Include="MessageRouting\DataStore\IRoutingDataManager.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="MessageRouting\MessageRouterManager.cs" />
     <Compile Include="MessageRouting\MessageRouterResult.cs" />
     <Compile Include="Models\PartyWithTimestamps.cs" />
+    <Compile Include="Utils\ExceptionHandler.cs" />
     <Compile Include="Utils\MessagingUtils.cs" />
     <Compile Include="Models\Party.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

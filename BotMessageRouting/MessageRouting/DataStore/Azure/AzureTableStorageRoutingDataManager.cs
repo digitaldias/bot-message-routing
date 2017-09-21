@@ -7,6 +7,7 @@ using Underscore.Bot.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
+using Underscore.Bot.MessageRouting.MessageRouting.DataStore.Azure;
 
 namespace Underscore.Bot.MessageRouting.DataStore.Azure
 {
@@ -20,7 +21,7 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
     /// See also Get started with Azure Table storage using .NET article:
     /// https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables
     /// </summary>
-    public class AzureTableStorageRoutingDataManager : IRoutingDataManager
+    public class AzureTableStorageRoutingDataManager : AzureStorageBase, IRoutingDataManager
     {
         public const string StorageConnectionStringKey = "AzureTableStorageConnectionString";
 
@@ -42,6 +43,7 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
         /// <param name="connectionString">The connection string for the Azure Table Storage.
         /// If the value is null, the constructor will look for the connection string in the app settings.</param>
         public AzureTableStorageRoutingDataManager(string connectionString = null)
+            : base(connectionString)
         {
             string resolvedConnectionString = null;
 
@@ -236,12 +238,13 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
         /// <returns></returns>
         protected bool AddParty(string tableKey, Party party)
         {
-            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableKey);
-            cloudTable.CreateIfNotExists();
-            PartyTableEntity partyTableEntity = new PartyTableEntity(party);
-            TableOperation insertTableOperation = TableOperation.Insert(partyTableEntity);
-            TableResult tableResult = cloudTable.Execute(insertTableOperation);
-            return (tableResult.HttpStatusCode == 200 || tableResult.HttpStatusCode == 201);
+            var cloudTable = _cloudTableClient.GetTableReference(tableKey);
+
+            if (cloudTable == null)
+                return false;
+
+            var partyTableEntity = new PartyTableEntity(party);
+            return InsertEntity(cloudTable, partyTableEntity);
         }
     }
 }
