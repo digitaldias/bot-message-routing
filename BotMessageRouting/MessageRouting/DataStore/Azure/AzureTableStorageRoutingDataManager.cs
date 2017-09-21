@@ -26,11 +26,11 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
         public const string StorageConnectionStringKey = "AzureTableStorageConnectionString";
 
         // See https://docs.microsoft.com/fi-fi/rest/api/storageservices/understanding-the-table-service-data-model
-        protected const string UserPartiesTableKey = "userparties";
-        protected const string BotPartiesTableKey = "botparties";
-        protected const string AggregationPartiesTableKey = "aggregationparties";
-        protected const string PendingRequestsTableKey = "pendingrequests";
-        protected const string ConnectedPartiesTableKey = "connectedparties";
+        protected const string UserPartiesTableKey          = "userparties";
+        protected const string BotPartiesTableKey           = "botparties";
+        protected const string AggregationPartiesTableKey   = "aggregationparties";
+        protected const string PendingRequestsTableKey      = "pendingrequests";
+        protected const string ConnectedPartiesTableKey     = "connectedparties";
 #if DEBUG
         protected const string MessageRouterResultsTableKey = "messagerouterresults";
 #endif
@@ -43,27 +43,20 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
         /// <param name="connectionString">The connection string for the Azure Table Storage.
         /// If the value is null, the constructor will look for the connection string in the app settings.</param>
         public AzureTableStorageRoutingDataManager(string connectionString = null)
-            : base(connectionString)
         {
-            string resolvedConnectionString = null;
-
             if (string.IsNullOrEmpty(connectionString))
             {
-                resolvedConnectionString = ConfigurationManager.AppSettings[StorageConnectionStringKey];
-            }
-            else
-            {
-                resolvedConnectionString = connectionString;
+                connectionString = ConfigurationManager.AppSettings[StorageConnectionStringKey];
             }
 
-            if (string.IsNullOrEmpty(resolvedConnectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentNullException($"Failed to find connection string in app settings (with key \"{StorageConnectionStringKey}\" nor was non-null string given to constructor");
             }
 
-            System.Diagnostics.Debug.WriteLine($"Azure Table Storage connection string: \"{resolvedConnectionString}\"");
-            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(resolvedConnectionString);
-            _cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
+            System.Diagnostics.Debug.WriteLine($"Azure Table Storage connection string: \"{connectionString}\"");
+
+            InitializeWithConnectionString(connectionString);
         }
 
         public IList<Party> GetUserParties()
@@ -225,25 +218,36 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
         /// <returns>A list of Party instances in the table.</returns>
         protected IList<Party> GetParties(string tableKey)
         {
-            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableKey);
-            cloudTable.CreateIfNotExists();
-            return PartyTableEntitiesToPartyList(cloudTable.ExecuteQuery(new TableQuery<PartyTableEntity>()));
+            var partiesTable = GetOrCreateCloudTable(tableKey);
+            if (partiesTable == null)
+                return new List<Party>();
+
+            var partyEntities = GetAll<PartyTableEntity>(partiesTable);
+
+            if (!partyEntities.Any())
+                return new List<Party>();
+
+            return partyEntities.Select(e => e.Party).ToList();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         /// <param name="tableKey"></param>
         /// <param name="party"></param>
         /// <returns></returns>
         protected bool AddParty(string tableKey, Party party)
         {
-            var cloudTable = _cloudTableClient.GetTableReference(tableKey);
+            if (string.IsNullOrEmpty(tableKey))
+                throw new ArgumentException("message", nameof(tableKey));
+
+            if (party == null)
+                throw new ArgumentNullException(nameof(party));
+
+            var partyTableEntity = new PartyTableEntity(party);
+            var cloudTable       = GetOrCreateCloudTable(tableKey);
 
             if (cloudTable == null)
                 return false;
 
-            var partyTableEntity = new PartyTableEntity(party);
             return InsertEntity(cloudTable, partyTableEntity);
         }
     }
