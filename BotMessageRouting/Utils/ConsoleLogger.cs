@@ -24,5 +24,11 @@ namespace Underscore.Bot.MessageRouting.Utils
         {
             Debug.WriteLine(message);
         }
+
+
+        public void LogWarning(string message)
+        {
+            Debug.WriteLine($"WARNING: {message}");
+        }
     }
 }

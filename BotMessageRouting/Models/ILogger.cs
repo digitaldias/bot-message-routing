@@ -13,5 +13,7 @@ namespace Underscore.Bot.MessageRouting.Models
         void LogInformation(string message);
 
         void LogException(Exception ex);
+
+        void LogWarning(string message);
     }
 }

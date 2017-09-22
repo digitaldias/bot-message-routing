@@ -21,7 +21,7 @@ namespace BotMessageRoutingTests
             Instance = AutoMock.ClassUnderTest;
         }
 
-        public Mock GetMockFor<TContract>() where TContract : class
+        public Mock<TContract> GetMockFor<TContract>() where TContract : class
         {
             return Mock.Get(AutoMock.Get<TContract>());
         }

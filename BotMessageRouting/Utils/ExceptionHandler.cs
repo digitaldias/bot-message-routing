@@ -17,6 +17,12 @@ namespace Underscore.Bot.MessageRouting.Utils
 
         public TResult Get<TResult>(Func<TResult> unsafeFunction)
         {
+            if(unsafeFunction == null)
+            {
+                _logger.LogWarning("Get Called without a function reference");
+                return default(TResult);
+            }
+
             try
             {
                 return unsafeFunction.Invoke();
