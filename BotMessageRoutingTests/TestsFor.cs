@@ -1,11 +1,5 @@
 ﻿using Moq;
-using StructureMap.AutoMocking;
 using StructureMap.AutoMocking.Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BotMessageRoutingTests
 {
@@ -18,12 +12,18 @@ namespace BotMessageRoutingTests
         {
             AutoMock = new MoqAutoMocker<TEntity>();
 
+            BeforeInstanceCreation();
+
             Instance = AutoMock.ClassUnderTest;
         }
 
         public Mock<TContract> GetMockFor<TContract>() where TContract : class
         {
             return Mock.Get(AutoMock.Get<TContract>());
+        }
+
+        public virtual void BeforeInstanceCreation(){
+            // For overrides only. No code here - ever.
         }
     }
 }

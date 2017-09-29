@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
 using Underscore.Bot.MessageRouting.MessageRouting.DataStore.Azure;
+using System.Diagnostics;
 
 namespace Underscore.Bot.MessageRouting.DataStore.Azure
 {
@@ -36,6 +37,18 @@ namespace Underscore.Bot.MessageRouting.DataStore.Azure
 #endif
 
         protected CloudTableClient _cloudTableClient;
+
+
+        public AzureTableStorageRoutingDataManager()
+        {
+            var connectionString = ConfigurationManager.AppSettings[StorageConnectionStringKey];
+            if(string.IsNullOrEmpty(connectionString))
+                throw new ArgumentNullException($"Failed to find connection string in app settings (with key \"{StorageConnectionStringKey}\" nor was non-null string given to constructor");
+
+            Debug.WriteLine($"Azure table storage connection string: '{connectionString}'");
+            InitializeWithConnectionString(connectionString);
+        }
+
 
         /// <summary>
         /// Constructor.

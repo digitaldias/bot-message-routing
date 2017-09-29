@@ -14,6 +14,15 @@ namespace BotMessageRoutingTests.MessageRouting.DataStore.Azure
 {
     public class AzureTableStorageRoutingDataManagerTests : TestsFor<AzureTableStorageRoutingDataManager>
     {
+        public override void BeforeInstanceCreation()
+        {
+            var mockConnectionString = "connectionString=I would really love to be connected someday";
+            AutoMock.Container.Configure(i => i
+            .ForConcreteType<AzureTableStorageRoutingDataManager>()
+            .Configure.Ctor<string>().Is(mockConnectionString));
+            
+        }
+
         [Fact]
         public void AddParty_PartyIsNull_ReturnsFalse()
         {
