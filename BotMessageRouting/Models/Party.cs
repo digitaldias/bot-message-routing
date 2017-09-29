@@ -53,23 +53,16 @@ namespace Underscore.Bot.Models
         /// <param name="channelAccount">Channel account (represents a specific user). Can be null
         /// and if so this party is considered to cover everyone in the given channel.
         /// <param name="conversationAccount">Conversation account. Must contain a valid ID.</param>
-        public Party(string serviceUrl, string channelId,
-            ChannelAccount channelAccount, ConversationAccount conversationAccount)
+        public Party(string serviceUrl, string channelId, ChannelAccount channelAccount, ConversationAccount conversationAccount)
         {
             if (string.IsNullOrEmpty(serviceUrl))
-            {
                 throw new AccessViolationException(nameof(serviceUrl));
-            }
 
             if (string.IsNullOrEmpty(channelId))
-            {
                 throw new ArgumentException(nameof(channelId));
-            }
 
             if (conversationAccount == null || string.IsNullOrEmpty(conversationAccount.Id))
-            {
                 throw new ArgumentException(nameof(conversationAccount));
-            }
 
             ServiceUrl = serviceUrl;
             ChannelId = channelId;
